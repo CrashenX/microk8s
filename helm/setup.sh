@@ -1,12 +1,11 @@
-microk8s.kubectl create namespace tiller
-microk8s.kubectl create -f rbac-config.yaml
+microk8s.kubectl create namespace tiller || kubectl create namespace tiller
+microk8s.kubectl create -f rbac-config.yaml || kubectl create -f rbac-config.yaml
 openssl genrsa -out ./ca.key.pem 4096
-cp /etc/ssl/openssl.cnf openssl-with-ca.cnf
-openssl req -key ca.key.pem -new -x509 -days 14 -sha256 -out ca.cert.pem -extensions v3_ca -config openssl-with-ca.cnf
+openssl req -key ca.key.pem -new -x509 -days 14 -sha256 -out ca.cert.pem -extensions v3_ca -subj "$SUBJ"
 openssl genrsa -out ./tiller.key.pem 4096
 openssl genrsa -out ./helm.key.pem 4096
-openssl req -key tiller.key.pem -new -sha256 -out tiller.csr.pem
-openssl req -key helm.key.pem -new -sha256 -out helm.csr.pem
+openssl req -key tiller.key.pem -new -sha256 -out tiller.csr.pem -subj "$SUBJ"
+openssl req -key helm.key.pem -new -sha256 -out helm.csr.pem -subj "$SUBJ"
 openssl x509 -req -CA ca.cert.pem -CAkey ca.key.pem -CAcreateserial -in tiller.csr.pem -out tiller.cert.pem -days 14
 openssl x509 -req -CA ca.cert.pem -CAkey ca.key.pem -CAcreateserial -in helm.csr.pem -out helm.cert.pem -days 14
 mkdir $(helm home); cp ca.cert.pem $(helm home)/ca.pem; cp helm.cert.pem $(helm home)/cert.pem; cp helm.key.pem $(helm home)/key.pem

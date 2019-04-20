@@ -32,13 +32,7 @@ spec:
             memory: 1Gi
         env:
         - name: 'ServerIP'
-          value: {{ required "A valid .Values.host.ipv4 entry required!" .Values.host.ipv4 }}
-        {{ if .Values.host.ipv6 }}
-        - name: 'ServerIPv6'
-          value: {{ .Values.host.ipv6 }}
-        - name: 'IPv6'
-          value: True
-        {{ end }}
+          value: {{ required "A valid .Values.host.ipv4 entry is required." .Values.host.ipv4 }}
         - name: 'DNS1'
           value: '1.1.1.1'
         - name: 'DNS2'
@@ -66,12 +60,6 @@ spec:
           - mountPath: "/etc/pihole"
             name: {{ template "pihole.fullname" . }}-pvc
             subPath: "pihole"
-          - mountPath: "/etc/dnsmasq.d"
-            name: {{ template "pihole.fullname" . }}-pvc
-            subPath: "dnsmasq"
-          - mountPath: "/etc/dnsmasq.d/02-custom.conf"
-            name: {{ template "pihole.fullname" . }}-dnsmasq
-            subPath: 02-custom.conf
           - mountPath: "/etc/pihole/whitelist.txt"
             name: {{ template "pihole.fullname" . }}-lists
             subPath: whitelist.txt
@@ -79,9 +67,6 @@ spec:
             name: {{ template "pihole.fullname" . }}-lists
             subPath: adlists.list
       volumes:
-        - name: {{ template "pihole.fullname" . }}-dnsmasq
-          configMap:
-            name: {{ template "pihole.fullname" . }}-dnsmasq
         - name: {{ template "pihole.fullname" . }}-lists
           configMap:
             name: {{ template "pihole.fullname" . }}-lists
