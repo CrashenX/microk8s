@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "pihole.fullname" . }}
+  labels:
+    app: {{ template "pihole.name" . }}
+    chart: {{ template "pihole.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: https
+    protocol: TCP
+  - name: dns
+    port: 53
+    targetPort: dns
+    protocol: TCP
+  - name: dns-udp
+    port: 53
+    targetPort: dns-udp
+    protocol: UDP
+  - name: client-udp
+    port: 67
+    targetPort: client-udp
+    protocol: UDP
+  externalIPs:
+  - {{ required "A valid .Values.host.ipv4 entry required!" .Values.host.ipv4 }}
+  {{ if .Values.host.ipv6 }}
+  - {{ .Values.host.ipv6 }}
+  {{ end }}
+  selector:
+    app: {{ template "pihole.fullname" . }}

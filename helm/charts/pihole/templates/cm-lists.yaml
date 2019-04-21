@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "pihole.fullname" . }}-lists
+  labels:
+    app: {{ template "pihole.name" . }}
+    chart: {{ template "pihole.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+  whitelist.txt: |-
+{{ .Files.Get "files/whitelist.txt" | indent 4 }}
+  adlists.list: |-
+{{ .Files.Get "files/adlists.list" | indent 4 }}

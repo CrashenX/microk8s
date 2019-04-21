@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "pihole.fullname" . }}
+  labels:
+    app: {{ template "pihole.name" . }}
+    chart: {{ template "pihole.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: 'nginx'
+spec:
+  rules:
+    - host: pi.hole
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ template "pihole.fullname" . }}
+              servicePort: http
