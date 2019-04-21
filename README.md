@@ -9,7 +9,7 @@ Tested with (on Ubuntu Server 18.04):
 - [microk8s](https://microk8s.io/)
     - Can be installed during Ubuntu Server 18.04 installation or with `snap`
     - Add `alias kubectl='microk8s.kubectl'` to bashrc
-    - NB: All DNS requests will show from 10.1.1.1 (docker bridge)
+    - NB: All DNS requests will show from 10.1.1.1 ([cbr0](https://github.com/ubuntu/microk8s#my-dns-and-dashboard-pods-are-crashlooping))
 
 ### Set up Helm / Tiller (with TLS)
 
