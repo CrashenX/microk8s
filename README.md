@@ -51,8 +51,8 @@ NB: You might want to logout and back in to reload bashrc
     PHIPV4=$(kubectl get service nginx-nginx-ingress-controller -o json | jq -r '.status.loadBalancer.ingress[0].ip')
     echo "PHIPV4=$PHIPV4"  # verify correct IPs
     pushd helm/charts/pihole
-    curl https://raw.githubusercontent.com/anudeepND/whitelist/master/domains/whitelist.txt > files/whitelist.txt
-    curl https://v.firebog.net/hosts/lists.php?type=nocross > files/adlists.list
+    echo 'google.com' > files/whitelist.txt  # whitelist domains here
+    echo 'https://dbl.oisd.nl' > files/adlists.list  # https://www.reddit.com/r/pihole/comments/bppug1/introducing_the/
     shelm install . --name pihole --namespace=pihole --set host.ipv4=$PHIPV4
     popd
 
