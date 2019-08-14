@@ -7,9 +7,22 @@
 Tested with (on Ubuntu Server 18.04):
 
 - [microk8s](https://microk8s.io/)
-    - Can be installed during Ubuntu Server 18.04 installation or with `snap`
+    - Can be installed during Ubuntu Server 18.04 installation or with `snap install microk8s --classic`
+    - Run `microk8s.enable dns storage` to enable dns and storage
     - Add `alias kubectl='microk8s.kubectl'` to bashrc
-    - NB: All DNS requests will show from 10.1.1.1 ([cbr0](https://github.com/ubuntu/microk8s#my-dns-and-dashboard-pods-are-crashlooping))
+
+### Gotchas
+
+  - I had to change the forwarding policy, per [this bug](https://github.com/ubuntu/microk8s/issues/75).
+
+        iptables -P FORWARD ACCEPT
+
+  - I had to allow traffic on cbr0 when using ufw, per [this post](https://stackoverflow.com/questions/53935094/how-to-make-helm-work-on-local-single-instance-kubernetes)
+
+        sudo ufw allow in on cbr0
+        sudo ufw allow out on cbr0
+
+  - NB: All DNS requests will show from 10.1.1.1 ([cbr0](https://github.com/ubuntu/microk8s#my-dns-and-dashboard-pods-are-crashlooping))
 
 ### Set up Helm / Tiller (with TLS)
 
@@ -51,12 +64,8 @@ NB: You might want to logout and back in to reload bashrc
     PHIPV4=$(kubectl get service nginx-nginx-ingress-controller -o json | jq -r '.status.loadBalancer.ingress[0].ip')
     echo "PHIPV4=$PHIPV4"  # verify correct IPs
     pushd helm/charts/pihole
-    curl https://raw.githubusercontent.com/anudeepND/whitelist/master/domains/whitelist.txt > files/whitelist.txt
-    curl https://v.firebog.net/hosts/lists.php?type=nocross > files/adlists.list
+    echo 'google.com' > files/whitelist.txt  # whitelist domains here
+    echo 'https://dbl.oisd.nl' > files/adlists.list  # https://www.reddit.com/r/pihole/comments/bppug1/introducing_the/
     shelm install . --name pihole --namespace=pihole --set host.ipv4=$PHIPV4
     popd
 
-## Gotchas
-
-  - I had to change the forwarding policy (`iptables -P FORWARD ACCEPT`), per
-  [this bug](https://github.com/ubuntu/microk8s/issues/75).

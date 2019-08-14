@@ -8,5 +8,5 @@ openssl req -key tiller.key.pem -new -sha256 -out tiller.csr.pem -subj "$SUBJ"
 openssl req -key helm.key.pem -new -sha256 -out helm.csr.pem -subj "$SUBJ"
 openssl x509 -req -CA ca.cert.pem -CAkey ca.key.pem -CAcreateserial -in tiller.csr.pem -out tiller.cert.pem -days 14
 openssl x509 -req -CA ca.cert.pem -CAkey ca.key.pem -CAcreateserial -in helm.csr.pem -out helm.cert.pem -days 14
-mkdir $(helm home); cp ca.cert.pem $(helm home)/ca.pem; cp helm.cert.pem $(helm home)/cert.pem; cp helm.key.pem $(helm home)/key.pem
+mkdir -p $(helm home); cp ca.cert.pem $(helm home)/ca.pem; cp helm.cert.pem $(helm home)/cert.pem; cp helm.key.pem $(helm home)/key.pem
 helm init --tiller-namespace tiller --service-account tiller --tiller-tls --tiller-tls-cert ./tiller.cert.pem --tiller-tls-key ./tiller.key.pem --tiller-tls-verify --tls-ca-cert ca.cert.pem
